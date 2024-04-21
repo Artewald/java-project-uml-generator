@@ -1,0 +1,437 @@
+@startuml
+package game_client.states {
+	
+	class "HostLobby" as game_clientstatesHostLobby {
+		+onAction(ButtonEnum type): void 
+	}
+	
+	class "Multiplayer" as game_clientstatesMultiplayer {
+		+onAction(ButtonEnum type): void 
+	}
+	
+	class "ChooseMap" as game_clientstatesChooseMap {
+		+onAction(ButtonEnum type): void 
+	}
+	
+	abstract class "State" as game_clientstatesState {
+		+init(): void 
+	}
+	
+	interface "Observer" as game_clientstatesObserver {
+		+onAction(ButtonEnum type): void
+	}
+	
+	class "GameOver" as game_clientstatesGameOver {
+		+onAction(ButtonEnum type): void 
+	}
+	
+	class "ButtonFactory" as game_clientstatesButtonFactory {
+		+createAndAddButtonEntity(ButtonEnum button, Vector2 position, Vector2 size, JoinGameObserver observer, GameState game, int z_index): Entity 
+		+FindUVButtonPositions(int numberOfButtons, Vector2 containerUVPosition, float containerUVWidth, float containerUVHeight): List<Rectangle> 
+	}
+	
+	class "Menu" as game_clientstatesMenu {
+		+onAction(ButtonEnum type): void 
+	}
+	
+	interface "GameOverObserver" as game_clientstatesGameOverObserver {
+		+handleGameOver(): void
+	}
+	
+	class "ScreenManager" as game_clientstatesScreenManager {
+		+setGameId(UUID gameId): void 
+		+nextState(State state): void 
+		+isCurrentStateOfType(Class<T> classType): boolean 
+		+setIsLocalServer(boolean isLocal): void 
+	}
+	
+	class "InGame" as game_clientstatesInGame {
+		+onAction(ButtonEnum type): void 
+	}
+	
+	class "JoinLobby" as game_clientstatesJoinLobby {
+		+onAction(ButtonEnum type): void 
+		+onJoinGame(GameState game): void 
+	}
+	
+	class "Tutorial" as game_clientstatesTutorial {
+		+onAction(ButtonEnum type): void 
+	}
+	
+	interface "JoinGameObserver" as game_clientstatesJoinGameObserver {
+		+onJoinGame(GameState gameName): void
+	}
+	
+	class "Options" as game_clientstatesOptions {
+		+onAction(ButtonEnum type): void 
+	}
+}
+package game_client {
+	
+	class "Controllers" as game_clientControllers {
+	}
+	
+	class "TexturePack" as game_clientTexturePack {
+	}
+	
+	interface "ClientMessagingController" as game_clientClientMessagingController {
+		+joinGame(UUID gameID, UUID playerID): boolean
+	}
+	
+	class "GameClient" as game_clientGameClient {
+	}
+}
+package ecs.components {
+	
+	class "PlacedCardComponent" as ecscomponentsPlacedCardComponent {
+	}
+	
+	class "PositionComponent" as ecscomponentsPositionComponent {
+	}
+	
+	class "ButtonComponent" as ecscomponentsButtonComponent {
+	}
+	
+	class "SpriteComponent" as ecscomponentsSpriteComponent {
+	}
+	
+	class "TextComponent" as ecscomponentsTextComponent {
+		+setColor(Vector3 color): void 
+	}
+	
+	class "SoundComponent" as ecscomponentsSoundComponent {
+	}
+	
+	class "TileComponent" as ecscomponentsTileComponent {
+		+setTile(Tile tile): void 
+	}
+}
+package clock {
+	
+	class "Clock" as clockClock {
+	}
+}
+package game_server {
+	
+	class "GameState" as game_serverGameState {
+		+readExternal(ObjectInput in): void 
+		+deserializeFromByteArray(byte[] data): GameState 
+		+serializeToByteArray(GameState state): byte[] 
+		+writeExternal(ObjectOutput out): void 
+	}
+	
+	class "PlayerInput" as game_serverPlayerInput {
+	}
+	
+	class "CardFactory" as game_serverCardFactory {
+		+createCard(CardType type, Vector2 position, boolean placed): Entity 
+	}
+	
+	class "AudioPack" as game_serverAudioPack {
+	}
+	
+	class "GameServer" as game_serverGameServer {
+		+run(String mapName, boolean isMultiplayer): void 
+		+initializeVillage(GameState gameState): void 
+		+setPlayerId(UUID playerId): void 
+	}
+	
+	interface "ServerMessagingController" as game_serverServerMessagingController {
+		+createGame(String mapName): UUID
+	}
+}
+package ecs {
+	
+	class "ECSManager" as ecsECSManager {
+		+removeLocalEntity(Entity entity): void 
+		+removeRemoteEntity(Entity entity): void 
+		+addSystem(System system): void 
+		+update(float deltaTime): void 
+		+addLocalEntity(Entity entity): void 
+		+getOrDefaultComponentManager(Class<T> componentType): ComponentManager<T> 
+		+addRemoteEntity(Entity entity): void 
+	}
+	
+	class "Entity" as ecsEntity {
+		+removeComponent(Class<T> componentType): void 
+		+addComponent(Class<T> componentType, T component): void 
+		+getComponent(Class<T> componentType): Optional<T> 
+		+equals(Object object): boolean 
+	}
+	
+	interface "GraphicsController" as ecsGraphicsController {
+		+draw(SpriteComponent spriteComponent, PositionComponent positionComponent): void
+	}
+	
+	interface "InputController" as ecsInputController {
+		+onTouch(Consumer<TouchLocation> onTouch): void
+	}
+	
+	interface "SoundController" as ecsSoundController {
+		+playSound(SoundComponent soundComponent): void
+	}
+	
+	class "ComponentManager" as ecsComponentManager {
+		+addComponent(Entity entity, T component): void 
+		+removeComponent(Entity entity): void 
+		+getComponent(Entity entity): Optional<T> 
+	}
+}
+package ecs.systems {
+	
+	class "InputSystem" as ecssystemsInputSystem {
+		+onTouch(TouchLocation touchLocation): void 
+		+update(Set<Entity> entities, float deltaTime): void 
+		+onRelease(TouchLocation touchLocation): void 
+	}
+	
+	class "AudioSystem" as ecssystemsAudioSystem {
+		+update(Set<Entity> entities, float deltaTime): void 
+	}
+	
+	class "MovementSystem" as ecssystemsMovementSystem {
+		+update(Set<Entity> entities, float deltaTime): void 
+	}
+	
+	class "RenderingSystem" as ecssystemsRenderingSystem {
+		+compare(Pair<TextComponent, PositionComponent> s1, Pair<TextComponent, PositionComponent> s2): int 
+		+update(Set<Entity> entities, float deltaTime): void 
+	}
+	
+	class "GameOverSystem" as ecssystemsGameOverSystem {
+		+update(Set<Entity> entities, float deltaTime): void 
+	}
+}
+package math {
+	
+	class "Vector2" as mathVector2 {
+		+add(Vector2 vector): Vector2 
+		+scl(float scalar): Vector2 
+		+set(Vector2 vector): void 
+		+sub(Vector2 vector): Vector2 
+		+dst(float x1, float y1, float x2, float y2): float 
+		+dot(Vector2 vector): float 
+	}
+	
+	class "Rectangle" as mathRectangle {
+		+setSize(float width, float height): Rectangle 
+		+overlaps(Rectangle rectangle): boolean 
+		+setY(float y): Rectangle 
+		+setPosition(Vector2 vector): Rectangle 
+		+setX(float x): Rectangle 
+		+contains(Rectangle rectangle): boolean 
+		+equals(Object object): boolean 
+		+set(Rectangle rectangle): void 
+		+setCenter(Vector2 vector): Rectangle 
+		+getCenter(Vector2 vector): Vector2 
+		+merge(Rectangle rectangle, Vector2 vector, Vector2 vector2, Rectangle rectangle2, Vector2 vector3, Vector2 vector4, Vector2 vector5, Vector2 vector6): Rectangle 
+	}
+	
+	class "Vector3" as mathVector3 {
+	}
+}
+game_clientstatesState --> ecsECSManager
+game_clientstatesState --> game_clientControllers
+game_clientstatesState --> ecsEntity
+game_clientstatesState --> mathVector2
+game_clientstatesState --> game_clientstatesScreenManager
+game_clientstatesJoinLobby --> ecscomponentsTextComponent
+game_clientstatesJoinLobby --> ecsEntity
+game_clientstatesJoinLobby --> game_clientstatesButtonFactory
+game_clientstatesJoinLobby --> game_clientstatesState
+game_clientstatesJoinLobby --> ecssystemsInputSystem
+game_clientstatesJoinLobby --> ecsECSManager
+game_clientstatesJoinLobby --> game_clientstatesJoinGameObserver
+game_clientstatesJoinLobby --> ecscomponentsSpriteComponent
+game_clientstatesJoinLobby --> game_clientTexturePack
+game_clientstatesJoinLobby --> game_clientstatesMultiplayer
+game_clientstatesJoinLobby --> ecssystemsRenderingSystem
+game_clientstatesJoinLobby --> ecscomponentsButtonComponentButtonEnum
+game_clientstatesJoinLobby --> ecscomponentsPositionComponent
+game_clientstatesJoinLobby --> game_clientControllers
+game_clientstatesJoinLobby --> mathVector2
+game_clientstatesJoinLobby --> game_serverGameState
+game_clientstatesJoinLobby --> game_clientstatesInGame
+game_clientstatesJoinLobby --> game_clientstatesObserver
+game_clientstatesGameOver --> ecscomponentsTextComponent
+game_clientstatesGameOver --> ecsEntity
+game_clientstatesGameOver --> ecscomponentsButtonComponentButtonEnum
+game_clientstatesGameOver --> game_clientstatesButtonFactory
+game_clientstatesGameOver --> game_clientstatesState
+game_clientstatesGameOver --> game_clientstatesObserver
+game_clientstatesGameOver --> mathVector2
+game_clientstatesGameOver --> game_clientstatesMenu
+game_clientstatesGameOver --> ecssystemsInputSystem
+game_clientstatesGameOver --> mathVector3
+game_clientstatesGameOver --> ecsECSManager
+game_clientstatesGameOver --> ecscomponentsPositionComponent
+game_clientstatesGameOver --> game_clientControllers
+game_clientstatesGameOver --> ecssystemsRenderingSystem
+game_clientstatesGameOver --> game_clientstatesScreenManager
+game_clientClientMessagingController --> game_serverPlayerInput
+game_clientClientMessagingController --> game_serverGameState
+game_clientstatesMultiplayer --> game_clientstatesState
+game_clientstatesMultiplayer --> mathVector2
+game_clientstatesMultiplayer --> game_clientstatesChooseMap
+game_clientstatesMultiplayer --> game_clientstatesMenu
+game_clientstatesMultiplayer --> game_clientstatesJoinLobby
+game_clientstatesMultiplayer --> ecsEntity
+game_clientstatesMultiplayer --> game_clientstatesButtonFactory
+game_clientstatesMultiplayer --> game_clientTexturePack
+game_clientstatesMultiplayer --> ecscomponentsSpriteComponent
+game_clientstatesMultiplayer --> ecssystemsInputSystem
+game_clientstatesMultiplayer --> ecssystemsRenderingSystem
+game_clientstatesMultiplayer --> game_clientstatesObserver
+game_clientstatesMultiplayer --> ecsECSManager
+game_clientstatesMultiplayer --> ecscomponentsButtonComponentButtonEnum
+game_clientstatesMultiplayer --> game_clientControllers
+game_clientstatesMultiplayer --> ecscomponentsPositionComponent
+game_clientControllers --> ecsSoundController
+game_clientControllers --> ecsGraphicsController
+game_clientControllers --> ecsInputController
+game_clientControllers --> game_serverGameServer
+game_clientControllers --> game_serverServerMessagingController
+game_clientControllers --> game_clientClientMessagingController
+game_clientstatesButtonFactory --> ecscomponentsButtonComponent
+game_clientstatesButtonFactory --> game_clientstatesState
+game_clientstatesButtonFactory --> game_clientstatesObserver
+game_clientstatesButtonFactory --> game_clientTexturePack
+game_clientstatesButtonFactory --> game_serverGameState
+game_clientstatesButtonFactory --> ecscomponentsButtonComponentButtonEnum
+game_clientstatesButtonFactory --> mathRectangle
+game_clientstatesButtonFactory --> game_clientstatesJoinGameObserver
+game_clientstatesButtonFactory --> mathVector2
+game_clientstatesButtonFactory --> ecscomponentsPositionComponent
+game_clientstatesButtonFactory --> ecsECSManager
+game_clientstatesButtonFactory --> ecsEntity
+game_clientstatesButtonFactory --> ecscomponentsSpriteComponent
+game_clientstatesGameOverObserver --> game_clientstatesObserver
+game_clientstatesGameOverObserver --> game_clientstatesGameOver
+game_clientstatesJoinGameObserver --> game_clientstatesState
+game_clientstatesJoinGameObserver --> game_clientstatesObserver
+game_clientstatesJoinGameObserver --> game_serverGameState
+game_clientstatesObserver --> ecscomponentsButtonComponentButtonEnum
+game_clientstatesChooseMap --> ecssystemsRenderingSystem
+game_clientstatesChooseMap --> ecsECSManager
+game_clientstatesChooseMap --> ecsEntity
+game_clientstatesChooseMap --> ecscomponentsPositionComponent
+game_clientstatesChooseMap --> ecscomponentsSpriteComponent
+game_clientstatesChooseMap --> game_clientstatesMenu
+game_clientstatesChooseMap --> game_clientControllers
+game_clientstatesChooseMap --> mathVector2
+game_clientstatesChooseMap --> game_clientstatesButtonFactory
+game_clientstatesChooseMap --> game_clientstatesMultiplayer
+game_clientstatesChooseMap --> game_clientTexturePack
+game_clientstatesChooseMap --> game_clientstatesState
+game_clientstatesChooseMap --> ecssystemsInputSystem
+game_clientstatesChooseMap --> ecscomponentsButtonComponentButtonEnum
+game_clientstatesChooseMap --> game_clientstatesInGame
+game_clientstatesChooseMap --> game_clientstatesObserver
+game_clientGameClient --> game_clientControllers
+game_clientGameClient --> ecsECSManager
+game_clientGameClient --> game_clientClientMessagingController
+game_clientGameClient --> game_serverGameState
+game_clientGameClient --> game_clientstatesGameOver
+game_clientGameClient --> game_clientstatesInGame
+game_clientGameClient --> clockClock
+game_clientGameClient --> game_clientstatesMenu
+game_clientGameClient --> game_clientstatesScreenManager
+game_clientstatesMenu --> ecsECSManager
+game_clientstatesMenu --> mathVector2
+game_clientstatesMenu --> ecscomponentsPositionComponent
+game_clientstatesMenu --> game_clientstatesState
+game_clientstatesMenu --> game_clientstatesButtonFactory
+game_clientstatesMenu --> game_clientstatesChooseMap
+game_clientstatesMenu --> ecsComponentManager
+game_clientstatesMenu --> ecscomponentsSpriteComponent
+game_clientstatesMenu --> ecssystemsRenderingSystem
+game_clientstatesMenu --> game_clientstatesObserver
+game_clientstatesMenu --> game_clientstatesTutorial
+game_clientstatesMenu --> ecssystemsInputSystem
+game_clientstatesMenu --> ecscomponentsSoundComponent
+game_clientstatesMenu --> ecsEntity
+game_clientstatesMenu --> ecscomponentsButtonComponentButtonEnum
+game_clientstatesMenu --> game_clientTexturePack
+game_clientstatesMenu --> game_clientstatesMultiplayer
+game_clientstatesMenu --> game_clientControllers
+game_clientstatesMenu --> game_clientstatesOptions
+game_clientstatesMenu --> ecssystemsAudioSystem
+game_clientstatesMenu --> game_serverAudioPack
+game_clientstatesTutorial --> ecsEntity
+game_clientstatesTutorial --> game_clientstatesState
+game_clientstatesTutorial --> ecscomponentsTextComponent
+game_clientstatesTutorial --> ecscomponentsPositionComponent
+game_clientstatesTutorial --> game_clientTexturePack
+game_clientstatesTutorial --> ecsECSManager
+game_clientstatesTutorial --> ecscomponentsButtonComponentButtonEnum
+game_clientstatesTutorial --> ecssystemsRenderingSystem
+game_clientstatesTutorial --> game_clientstatesMenu
+game_clientstatesTutorial --> mathVector2
+game_clientstatesTutorial --> ecssystemsInputSystem
+game_clientstatesTutorial --> ecscomponentsSpriteComponent
+game_clientstatesTutorial --> game_clientstatesButtonFactory
+game_clientstatesTutorial --> game_clientstatesObserver
+game_clientstatesTutorial --> game_clientControllers
+game_clientstatesInGame --> game_clientstatesButtonFactory
+game_clientstatesInGame --> ecsEntity
+game_clientstatesInGame --> ecssystemsMovementSystem
+game_clientstatesInGame --> ecscomponentsPositionComponent
+game_clientstatesInGame --> ecscomponentsButtonComponent
+game_clientstatesInGame --> ecscomponentsSoundComponent
+game_clientstatesInGame --> ecssystemsAudioSystem
+game_clientstatesInGame --> ecssystemsInputSystem
+game_clientstatesInGame --> game_clientstatesObserver
+game_clientstatesInGame --> ecscomponentsTileComponent
+game_clientstatesInGame --> ecsComponentManager
+game_clientstatesInGame --> ecscomponentsButtonComponentButtonEnum
+game_clientstatesInGame --> game_clientstatesScreenManager
+game_clientstatesInGame --> game_clientstatesMenu
+game_clientstatesInGame --> game_clientstatesGameOverObserver
+game_clientstatesInGame --> game_serverCardFactoryCardType
+game_clientstatesInGame --> game_clientControllers
+game_clientstatesInGame --> game_clientstatesState
+game_clientstatesInGame --> ecssystemsGameOverSystem
+game_clientstatesInGame --> game_clientstatesGameOver
+game_clientstatesInGame --> ecscomponentsPlacedCardComponent
+game_clientstatesInGame --> ecscomponentsSpriteComponent
+game_clientstatesInGame --> game_serverCardFactory
+game_clientstatesInGame --> ecsECSManager
+game_clientstatesInGame --> ecssystemsRenderingSystem
+game_clientstatesInGame --> game_clientTexturePack
+game_clientstatesInGame --> game_serverPlayerInput
+game_clientstatesInGame --> mathVector2
+game_clientstatesOptions --> ecsECSManager
+game_clientstatesOptions --> game_clientstatesButtonFactory
+game_clientstatesOptions --> game_clientControllers
+game_clientstatesOptions --> ecssystemsInputSystem
+game_clientstatesOptions --> ecscomponentsSpriteComponent
+game_clientstatesOptions --> mathVector2
+game_clientstatesOptions --> ecscomponentsTextComponent
+game_clientstatesOptions --> game_clientTexturePack
+game_clientstatesOptions --> game_clientstatesScreenManager
+game_clientstatesOptions --> game_clientstatesObserver
+game_clientstatesOptions --> ecscomponentsButtonComponentButtonEnum
+game_clientstatesOptions --> ecscomponentsPositionComponent
+game_clientstatesOptions --> game_clientstatesState
+game_clientstatesOptions --> ecsComponentManager
+game_clientstatesOptions --> ecsEntity
+game_clientstatesOptions --> ecssystemsRenderingSystem
+game_clientstatesHostLobby --> ecscomponentsButtonComponentButtonEnum
+game_clientstatesHostLobby --> ecssystemsRenderingSystem
+game_clientstatesHostLobby --> game_clientstatesButtonFactory
+game_clientstatesHostLobby --> game_clientTexturePack
+game_clientstatesHostLobby --> ecsECSManager
+game_clientstatesHostLobby --> game_clientstatesState
+game_clientstatesHostLobby --> ecssystemsInputSystem
+game_clientstatesHostLobby --> mathRectangle
+game_clientstatesHostLobby --> game_clientstatesObserver
+game_clientstatesHostLobby --> ecscomponentsTextComponent
+game_clientstatesHostLobby --> game_clientControllers
+game_clientstatesHostLobby --> ecscomponentsSpriteComponent
+game_clientstatesHostLobby --> ecscomponentsPositionComponent
+game_clientstatesHostLobby --> game_clientstatesMenu
+game_clientstatesHostLobby --> ecsEntity
+game_clientstatesHostLobby --> mathVector2
+game_clientstatesScreenManager --> game_clientstatesState
+game_clientstatesScreenManager --> ecsECSManager
+@enduml

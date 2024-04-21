@@ -1,0 +1,32 @@
+@startuml
+package graphics {
+	
+	class "LibGDXGraphics" as graphicsLibGDXGraphics {
+		+drawText(TextComponent textComponent, PositionComponent positionComponent): void 
+		+drawSquare(PositionComponent positionComponent, float width, float height, float r, float g, float b, float a): void 
+		+draw(SpriteComponent component, PositionComponent positionComponent): void 
+	}
+}
+package ecs.components {
+	
+	class "PositionComponent" as ecscomponentsPositionComponent {
+	}
+	
+	class "SpriteComponent" as ecscomponentsSpriteComponent {
+	}
+	
+	class "TextComponent" as ecscomponentsTextComponent {
+		+setColor(Vector3 color): void 
+	}
+}
+package ecs {
+	
+	interface "GraphicsController" as ecsGraphicsController {
+		+draw(SpriteComponent spriteComponent, PositionComponent positionComponent): void
+	}
+}
+graphicsLibGDXGraphics --> ecscomponentsSpriteComponent
+graphicsLibGDXGraphics --> ecscomponentsTextComponent
+graphicsLibGDXGraphics --> ecscomponentsPositionComponent
+graphicsLibGDXGraphics --> ecsGraphicsController
+@enduml

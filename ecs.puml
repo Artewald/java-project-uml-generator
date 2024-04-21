@@ -1,0 +1,328 @@
+@startuml
+package ecs.components {
+	
+	class "TargetComponent" as ecscomponentsTargetComponent {
+	}
+	
+	class "PlacedCardComponent" as ecscomponentsPlacedCardComponent {
+	}
+	
+	class "CardHolderComponent" as ecscomponentsCardHolderComponent {
+	}
+	
+	class "VillageComponent" as ecscomponentsVillageComponent {
+	}
+	
+	class "PositionComponent" as ecscomponentsPositionComponent {
+	}
+	
+	class "ButtonComponent" as ecscomponentsButtonComponent {
+	}
+	
+	class "CostComponent" as ecscomponentsCostComponent {
+		+setCost(int cost): void 
+	}
+	
+	class "EnemyComponent" as ecscomponentsEnemyComponent {
+	}
+	
+	class "SpriteComponent" as ecscomponentsSpriteComponent {
+	}
+	
+	class "AnimationComponent" as ecscomponentsAnimationComponent {
+		+setAnimation(List<String> animationPaths): void 
+		+getFramePath(float deltaTime): String 
+	}
+	
+	class "HealthComponent" as ecscomponentsHealthComponent {
+		+setMaxHealth(int maxHealth): void 
+		+setHealth(int health): void 
+	}
+	
+	class "AreaOfAffectComponent" as ecscomponentsAreaOfAffectComponent {
+	}
+	
+	class "VelocityComponent" as ecscomponentsVelocityComponent {
+	}
+	
+	class "TextComponent" as ecscomponentsTextComponent {
+		+setColor(Vector3 color): void 
+	}
+	
+	class "TowerComponent" as ecscomponentsTowerComponent {
+		+updateTimeSinceLastAttack(float deltaTime): void 
+		+setDamage(int damage): void 
+		+setRange(int range): void 
+	}
+	
+	class "AreaOfEffectComponent" as ecscomponentsAreaOfEffectComponent {
+	}
+	
+	class "PlayerComponent" as ecscomponentsPlayerComponent {
+	}
+	
+	class "PathfindingComponent" as ecscomponentsPathfindingComponent {
+	}
+	
+	class "SoundComponent" as ecscomponentsSoundComponent {
+	}
+	
+	class "TileComponent" as ecscomponentsTileComponent {
+		+setTile(Tile tile): void 
+	}
+	
+	class "MoneyComponent" as ecscomponentsMoneyComponent {
+	}
+}
+package ecs {
+	
+	class "ECSManager" as ecsECSManager {
+		+removeLocalEntity(Entity entity): void 
+		+removeRemoteEntity(Entity entity): void 
+		+addSystem(System system): void 
+		+update(float deltaTime): void 
+		+addLocalEntity(Entity entity): void 
+		+getOrDefaultComponentManager(Class<T> componentType): ComponentManager<T> 
+		+addRemoteEntity(Entity entity): void 
+	}
+	
+	class "TileComponentManager" as ecsTileComponentManager {
+		+getTilesOfType(TileType type): List<Tile> 
+		+addComponent(Entity entity, TileComponent component): void 
+		+getTileAt(int x, int y): Tile 
+	}
+	
+	abstract class "Card" as ecsCard {
+	}
+	
+	class "Entity" as ecsEntity {
+		+removeComponent(Class<T> componentType): void 
+		+addComponent(Class<T> componentType, T component): void 
+		+getComponent(Class<T> componentType): Optional<T> 
+		+equals(Object object): boolean 
+	}
+	
+	class "TouchLocation" as ecsTouchLocation {
+	}
+	
+	interface "System" as ecsSystem {
+		+update(Set<Entity> entities, float deltaTime): void
+	}
+	
+	interface "GraphicsController" as ecsGraphicsController {
+		+draw(SpriteComponent spriteComponent, PositionComponent positionComponent): void
+	}
+	
+	interface "InputController" as ecsInputController {
+		+onTouch(Consumer<TouchLocation> onTouch): void
+	}
+	
+	interface "SoundController" as ecsSoundController {
+		+playSound(SoundComponent soundComponent): void
+	}
+	
+	class "ComponentManager" as ecsComponentManager {
+		+addComponent(Entity entity, T component): void 
+		+removeComponent(Entity entity): void 
+		+getComponent(Entity entity): Optional<T> 
+	}
+}
+package ecs.systems {
+	
+	class "AnimationSystem" as ecssystemsAnimationSystem {
+		+update(Set<Entity> entities, float deltaTime): void 
+	}
+	
+	class "InputSystem" as ecssystemsInputSystem {
+		+onTouch(TouchLocation touchLocation): void 
+		+update(Set<Entity> entities, float deltaTime): void 
+		+onRelease(TouchLocation touchLocation): void 
+	}
+	
+	class "AudioSystem" as ecssystemsAudioSystem {
+		+update(Set<Entity> entities, float deltaTime): void 
+	}
+	
+	class "MovementSystem" as ecssystemsMovementSystem {
+		+update(Set<Entity> entities, float deltaTime): void 
+	}
+	
+	class "AttackSystem" as ecssystemsAttackSystem {
+		+update(Set<Entity> entities, float deltaTime): void 
+	}
+	
+	class "EnemySystem" as ecssystemsEnemySystem {
+		+update(Set<Entity> entities, float deltaTime): void 
+	}
+	
+	class "RenderingSystem" as ecssystemsRenderingSystem {
+		+compare(Pair<TextComponent, PositionComponent> s1, Pair<TextComponent, PositionComponent> s2): int 
+		+update(Set<Entity> entities, float deltaTime): void 
+	}
+	
+	class "GameOverSystem" as ecssystemsGameOverSystem {
+		+update(Set<Entity> entities, float deltaTime): void 
+	}
+}
+package game_server {
+	
+	class "Tile" as game_serverTile {
+		+setCardOrTowerTexturePath(String cardOrTowerTexturePath): void 
+		+setCard(Entity card): void 
+		+setTower(Entity tower): void 
+	}
+	
+	class "Map" as game_serverMap {
+		+setTileHeight(float tileHeight): void 
+		+setTileWidth(float tileWidth): void 
+		+isBuildable(int row, int col): boolean 
+		+getTextureForTile(Tile tile): String 
+	}
+	
+	class "TowerFactory" as game_serverTowerFactory {
+		+createTower(TowerType towerType, Vector2 position): Entity 
+		+copyTower(Entity tower): Entity 
+	}
+	
+	class "EnemyFactory" as game_serverEnemyFactory {
+		+createEnemy(EnemyType enemyType, List<Tile> enemyPath, Vector2 tileSize): Entity 
+	}
+}
+package math {
+	
+	class "Vector2" as mathVector2 {
+		+add(Vector2 vector): Vector2 
+		+scl(float scalar): Vector2 
+		+set(Vector2 vector): void 
+		+sub(Vector2 vector): Vector2 
+		+dst(float x1, float y1, float x2, float y2): float 
+		+dot(Vector2 vector): float 
+	}
+	
+	class "Vector3" as mathVector3 {
+	}
+}
+package game_client.states {
+	
+	interface "GameOverObserver" as game_clientstatesGameOverObserver {
+		+handleGameOver(): void
+	}
+}
+ecssystemsMovementSystem --> ecsSystem
+ecssystemsMovementSystem --> ecscomponentsSpriteComponent
+ecssystemsMovementSystem --> ecscomponentsTileComponent
+ecssystemsMovementSystem --> ecscomponentsVelocityComponent
+ecssystemsMovementSystem --> ecscomponentsPathfindingComponent
+ecssystemsMovementSystem --> game_serverTile
+ecssystemsMovementSystem --> mathVector2
+ecssystemsMovementSystem --> ecsEntity
+ecssystemsMovementSystem --> ecscomponentsPositionComponent
+ecssystemsMovementSystem --> ecsECSManager
+ecssystemsMovementSystem --> ecsComponentManager
+ecsCard --> ecscomponentsSpriteComponent
+ecsCard --> ecscomponentsPlacedCardComponent
+ecsCard --> ecscomponentsCostComponent
+ecssystemsRenderingSystem --> ecsECSManager
+ecssystemsRenderingSystem --> ecsGraphicsController
+ecssystemsRenderingSystem --> ecsComponentManager
+ecssystemsRenderingSystem --> ecsSystem
+ecssystemsRenderingSystem --> ecscomponentsHealthComponent
+ecssystemsRenderingSystem --> ecscomponentsPositionComponent
+ecssystemsRenderingSystem --> ecscomponentsSpriteComponent
+ecssystemsRenderingSystem --> ecsEntity
+ecssystemsRenderingSystem --> ecscomponentsTextComponent
+ecscomponentsCardHolderComponent --> ecsCard
+ecsGraphicsController --> ecscomponentsSpriteComponent
+ecsGraphicsController --> ecscomponentsPositionComponent
+ecsGraphicsController --> ecscomponentsTextComponent
+ecsInputController --> ecsTouchLocation
+ecscomponentsTextComponent --> mathVector3
+ecscomponentsTextComponent --> mathVector2
+ecssystemsInputSystem --> ecsSystem
+ecssystemsInputSystem --> ecsTouchLocation
+ecssystemsInputSystem --> ecscomponentsButtonComponent
+ecssystemsInputSystem --> ecsComponentManager
+ecssystemsInputSystem --> ecsECSManager
+ecssystemsInputSystem --> ecsEntity
+ecssystemsInputSystem --> ecsInputController
+ecscomponentsTileComponent --> game_serverTile
+ecsTileComponentManager --> ecsEntity
+ecsTileComponentManager --> ecsComponentManager
+ecsTileComponentManager --> ecscomponentsTileComponent
+ecsTileComponentManager --> game_serverTile
+ecsTileComponentManager --> game_serverTileType
+ecssystemsAudioSystem --> ecsEntity
+ecssystemsAudioSystem --> ecscomponentsSoundComponent
+ecssystemsAudioSystem --> ecscomponentsTowerComponent
+ecssystemsAudioSystem --> ecsComponentManager
+ecssystemsAudioSystem --> game_serverPairableCardsTowerType
+ecssystemsAudioSystem --> ecsSystem
+ecssystemsAudioSystem --> ecscomponentsEnemyComponent
+ecssystemsAudioSystem --> ecscomponentsPlacedCardComponent
+ecssystemsAudioSystem --> ecsSoundController
+ecssystemsAudioSystem --> ecsECSManager
+ecsECSManager --> ecsSystem
+ecsECSManager --> ecsEntity
+ecsECSManager --> ecsComponentManager
+ecsComponentManager --> ecsEntity
+ecscomponentsPositionComponent --> mathVector2
+ecscomponentsButtonComponent --> mathVector2
+ecssystemsGameOverSystem --> game_clientstatesGameOverObserver
+ecssystemsGameOverSystem --> ecsSystem
+ecssystemsGameOverSystem --> ecscomponentsVillageComponent
+ecssystemsGameOverSystem --> ecsECSManager
+ecssystemsGameOverSystem --> ecsEntity
+ecssystemsGameOverSystem --> ecsComponentManager
+ecssystemsGameOverSystem --> ecscomponentsHealthComponent
+ecsSystem --> ecsEntity
+ecscomponentsPathfindingComponent --> game_serverTile
+ecssystemsEnemySystem --> game_serverEnemyFactory
+ecssystemsEnemySystem --> ecscomponentsEnemyComponent
+ecssystemsEnemySystem --> ecscomponentsTextComponent
+ecssystemsEnemySystem --> mathVector3
+ecssystemsEnemySystem --> ecsECSManager
+ecssystemsEnemySystem --> ecsComponentManager
+ecssystemsEnemySystem --> ecsGraphicsController
+ecssystemsEnemySystem --> game_clientstatesGameOverObserver
+ecssystemsEnemySystem --> ecscomponentsMoneyComponent
+ecssystemsEnemySystem --> ecscomponentsPlayerComponent
+ecssystemsEnemySystem --> ecscomponentsPositionComponent
+ecssystemsEnemySystem --> game_serverTileType
+ecssystemsEnemySystem --> ecscomponentsHealthComponent
+ecssystemsEnemySystem --> ecscomponentsVelocityComponent
+ecssystemsEnemySystem --> ecsSystem
+ecssystemsEnemySystem --> ecscomponentsTileComponent
+ecssystemsEnemySystem --> game_serverEnemyFactoryEnemyType
+ecssystemsEnemySystem --> ecscomponentsPathfindingComponent
+ecssystemsEnemySystem --> ecscomponentsSpriteComponent
+ecssystemsEnemySystem --> game_serverTile
+ecssystemsEnemySystem --> mathVector2
+ecssystemsEnemySystem --> ecsEntity
+ecssystemsEnemySystem --> ecscomponentsVillageComponent
+ecssystemsAnimationSystem --> ecsSystem
+ecssystemsAnimationSystem --> ecsComponentManager
+ecssystemsAnimationSystem --> ecscomponentsSpriteComponent
+ecssystemsAnimationSystem --> ecscomponentsAnimationComponent
+ecssystemsAnimationSystem --> ecsECSManager
+ecssystemsAnimationSystem --> ecsEntity
+ecsSoundController --> ecscomponentsSoundComponent
+ecscomponentsSpriteComponent --> mathVector2
+ecscomponentsPlacedCardComponent --> game_serverCardFactoryCardType
+ecscomponentsTowerComponent --> game_serverPairableCardsTowerType
+ecsEntity --> ecsSystem
+ecsEntity --> ecsECSManager
+ecsEntity --> ecsComponentManager
+ecssystemsAttackSystem --> ecscomponentsTowerComponent
+ecssystemsAttackSystem --> mathVector2
+ecssystemsAttackSystem --> ecscomponentsHealthComponent
+ecssystemsAttackSystem --> ecscomponentsEnemyComponent
+ecssystemsAttackSystem --> game_serverMap
+ecssystemsAttackSystem --> ecscomponentsAreaOfEffectComponent
+ecssystemsAttackSystem --> ecsComponentManager
+ecssystemsAttackSystem --> ecscomponentsAnimationComponent
+ecssystemsAttackSystem --> ecsEntity
+ecssystemsAttackSystem --> ecsSystem
+ecssystemsAttackSystem --> ecscomponentsPositionComponent
+ecssystemsAttackSystem --> game_serverTowerFactory
+ecssystemsAttackSystem --> ecsECSManager
+@enduml

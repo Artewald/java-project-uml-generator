@@ -1,0 +1,7 @@
+@startuml
+package clock {
+	
+	class "Clock" as clockClock {
+	}
+}
+@enduml

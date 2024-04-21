@@ -1,0 +1,96 @@
+@startuml
+package networking.persistence {
+	
+	class "DAOBuilder" as networkingpersistenceDAOBuilder {
+	}
+	
+	interface "DAO" as networkingpersistenceDAO {
+	}
+	
+	class "FirebaseDAO" as networkingpersistenceFirebaseDAO {
+		+add(K id, T object): void 
+		+get(K id): Optional<T> 
+		+onDataChange(DataSnapshot dataSnapshot): void 
+		+onCancelled(DatabaseError databaseError): void 
+		+update(K id, T object): boolean 
+		+delete(K id): boolean 
+	}
+	
+	class "LocalDAO" as networkingpersistenceLocalDAO {
+		+get(K id): Optional<T> 
+		+update(K id, T object): boolean 
+		+delete(K id): boolean 
+		+add(K id, T object): void 
+	}
+}
+package networking.messaging {
+	
+	class "ClientMessenger" as networkingmessagingClientMessenger {
+		+requestGameState(UUID gameID): Optional<GameState> 
+		+joinGame(UUID gameID, UUID playerID): boolean 
+		+addAction(PlayerInput action): void 
+	}
+	
+	class "ServerMessenger" as networkingmessagingServerMessenger {
+		+createGame(String mapName): UUID 
+		+setNewGameState(UUID gameId, GameState gameState): void 
+		+getGameState(UUID gameId): GameState 
+		+lookForPendingActions(UUID playerId): List<PlayerInput> 
+		+lookForPendingPlayer(UUID gameId): Optional<UUID> 
+		+removeGame(UUID gameId): void 
+	}
+}
+package ecs {
+	
+	class "Entity" as ecsEntity {
+		+removeComponent(Class<T> componentType): void 
+		+addComponent(Class<T> componentType, T component): void 
+		+getComponent(Class<T> componentType): Optional<T> 
+		+equals(Object object): boolean 
+	}
+}
+package ecs.components {
+	
+	class "PlayerComponent" as ecscomponentsPlayerComponent {
+	}
+}
+package game_server {
+	
+	class "GameState" as game_serverGameState {
+		+readExternal(ObjectInput in): void 
+		+deserializeFromByteArray(byte[] data): GameState 
+		+serializeToByteArray(GameState state): byte[] 
+		+writeExternal(ObjectOutput out): void 
+	}
+	
+	class "PlayerInput" as game_serverPlayerInput {
+	}
+	
+	interface "ServerMessagingController" as game_serverServerMessagingController {
+		+createGame(String mapName): UUID
+	}
+}
+package game_client {
+	
+	interface "ClientMessagingController" as game_clientClientMessagingController {
+		+joinGame(UUID gameID, UUID playerID): boolean
+	}
+}
+networkingmessagingClientMessenger --> game_serverPlayerInput
+networkingmessagingClientMessenger --> networkingpersistenceDAOBuilder
+networkingmessagingClientMessenger --> game_clientClientMessagingController
+networkingmessagingClientMessenger --> game_serverGameState
+networkingmessagingClientMessenger --> networkingpersistenceDAO
+networkingpersistenceFirebaseDAO --> networkingpersistenceDAO
+networkingmessagingServerMessenger --> networkingpersistenceDAOBuilder
+networkingmessagingServerMessenger --> ecscomponentsPlayerComponent
+networkingmessagingServerMessenger --> ecsEntity
+networkingmessagingServerMessenger --> game_serverGameState
+networkingmessagingServerMessenger --> networkingpersistenceDAO
+networkingmessagingServerMessenger --> game_serverPlayerInput
+networkingmessagingServerMessenger --> game_serverServerMessagingController
+networkingpersistenceLocalDAO --> networkingpersistenceDAO
+networkingpersistenceDAOBuilder --> networkingpersistenceDAO
+networkingpersistenceDAOBuilder --> networkingpersistenceFirebaseDAO
+networkingpersistenceDAOBuilder --> networkingpersistenceLocalDAO
+@enduml

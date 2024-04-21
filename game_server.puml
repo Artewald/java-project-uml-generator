@@ -1,0 +1,390 @@
+@startuml
+package game_server.cards.tower_cards {
+	
+	class "BowCard" as game_servercardstower_cardsBowCard {
+	}
+	
+	class "PowerCard" as game_servercardstower_cardsPowerCard {
+	}
+	
+	class "MeleeCard" as game_servercardstower_cardsMeleeCard {
+	}
+	
+	class "MagicCard" as game_servercardstower_cardsMagicCard {
+	}
+}
+package game_server.cards.elemental_cards {
+	
+	class "LightningCard" as game_servercardselemental_cardsLightningCard {
+	}
+	
+	class "IceCard" as game_servercardselemental_cardsIceCard {
+	}
+	
+	class "TechnologyCard" as game_servercardselemental_cardsTechnologyCard {
+	}
+	
+	class "FlameCard" as game_servercardselemental_cardsFlameCard {
+	}
+}
+package game_server {
+	
+	class "MapFactory" as game_serverMapFactory {
+		+createMap(String mapName): Map 
+	}
+	
+	class "Tile" as game_serverTile {
+		+setCardOrTowerTexturePath(String cardOrTowerTexturePath): void 
+		+setCard(Entity card): void 
+		+setTower(Entity tower): void 
+	}
+	
+	class "GameState" as game_serverGameState {
+		+readExternal(ObjectInput in): void 
+		+deserializeFromByteArray(byte[] data): GameState 
+		+serializeToByteArray(GameState state): byte[] 
+		+writeExternal(ObjectOutput out): void 
+	}
+	
+	class "Map" as game_serverMap {
+		+setTileHeight(float tileHeight): void 
+		+setTileWidth(float tileWidth): void 
+		+isBuildable(int row, int col): boolean 
+		+getTextureForTile(Tile tile): String 
+	}
+	
+	class "PlayerInput" as game_serverPlayerInput {
+	}
+	
+	class "TowerFactory" as game_serverTowerFactory {
+		+createTower(TowerType towerType, Vector2 position): Entity 
+		+copyTower(Entity tower): Entity 
+	}
+	
+	class "CardFactory" as game_serverCardFactory {
+		+createCard(CardType type, Vector2 position, boolean placed): Entity 
+	}
+	
+	class "TexturePack" as game_serverTexturePack {
+	}
+	
+	class "AudioPack" as game_serverAudioPack {
+	}
+	
+	class "GameServer" as game_serverGameServer {
+		+run(String mapName, boolean isMultiplayer): void 
+		+initializeVillage(GameState gameState): void 
+		+setPlayerId(UUID playerId): void 
+	}
+	
+	class "EnemyFactory" as game_serverEnemyFactory {
+		+createEnemy(EnemyType enemyType, List<Tile> enemyPath, Vector2 tileSize): Entity 
+	}
+	
+	class "PairableCards" as game_serverPairableCards {
+		+equals(Object o): boolean 
+		+getTower(CardType card1, CardType card2): Optional<TowerType> 
+		+isPairable(CardType card1, CardType card2): boolean 
+	}
+	
+	interface "ServerMessagingController" as game_serverServerMessagingController {
+		+createGame(String mapName): UUID
+	}
+	
+	interface "PersistenceAccess" as game_serverPersistenceAccess {
+		+updateHighscore(UUID playerID, int score): void
+	}
+}
+package ecs {
+	
+	class "ECSManager" as ecsECSManager {
+		+removeLocalEntity(Entity entity): void 
+		+removeRemoteEntity(Entity entity): void 
+		+addSystem(System system): void 
+		+update(float deltaTime): void 
+		+addLocalEntity(Entity entity): void 
+		+getOrDefaultComponentManager(Class<T> componentType): ComponentManager<T> 
+		+addRemoteEntity(Entity entity): void 
+	}
+	
+	abstract class "Card" as ecsCard {
+	}
+	
+	class "Entity" as ecsEntity {
+		+removeComponent(Class<T> componentType): void 
+		+addComponent(Class<T> componentType, T component): void 
+		+getComponent(Class<T> componentType): Optional<T> 
+		+equals(Object object): boolean 
+	}
+	
+	class "ComponentManager" as ecsComponentManager {
+		+addComponent(Entity entity, T component): void 
+		+removeComponent(Entity entity): void 
+		+getComponent(Entity entity): Optional<T> 
+	}
+}
+package ecs.components {
+	
+	class "TargetComponent" as ecscomponentsTargetComponent {
+	}
+	
+	class "PlacedCardComponent" as ecscomponentsPlacedCardComponent {
+	}
+	
+	class "VillageComponent" as ecscomponentsVillageComponent {
+	}
+	
+	class "PositionComponent" as ecscomponentsPositionComponent {
+	}
+	
+	class "CostComponent" as ecscomponentsCostComponent {
+		+setCost(int cost): void 
+	}
+	
+	class "EnemyComponent" as ecscomponentsEnemyComponent {
+	}
+	
+	class "SpriteComponent" as ecscomponentsSpriteComponent {
+	}
+	
+	class "AnimationComponent" as ecscomponentsAnimationComponent {
+		+setAnimation(List<String> animationPaths): void 
+		+getFramePath(float deltaTime): String 
+	}
+	
+	class "HealthComponent" as ecscomponentsHealthComponent {
+		+setMaxHealth(int maxHealth): void 
+		+setHealth(int health): void 
+	}
+	
+	class "VelocityComponent" as ecscomponentsVelocityComponent {
+	}
+	
+	class "TextComponent" as ecscomponentsTextComponent {
+		+setColor(Vector3 color): void 
+	}
+	
+	class "TowerComponent" as ecscomponentsTowerComponent {
+		+updateTimeSinceLastAttack(float deltaTime): void 
+		+setDamage(int damage): void 
+		+setRange(int range): void 
+	}
+	
+	class "AreaOfEffectComponent" as ecscomponentsAreaOfEffectComponent {
+	}
+	
+	class "PlayerComponent" as ecscomponentsPlayerComponent {
+	}
+	
+	class "PathfindingComponent" as ecscomponentsPathfindingComponent {
+	}
+	
+	class "SoundComponent" as ecscomponentsSoundComponent {
+	}
+	
+	class "TileComponent" as ecscomponentsTileComponent {
+		+setTile(Tile tile): void 
+	}
+	
+	class "MoneyComponent" as ecscomponentsMoneyComponent {
+	}
+}
+package game_client {
+	
+	class "TexturePack" as game_clientTexturePack {
+	}
+}
+package clock {
+	
+	class "Clock" as clockClock {
+	}
+}
+package math {
+	
+	class "Vector2" as mathVector2 {
+		+add(Vector2 vector): Vector2 
+		+scl(float scalar): Vector2 
+		+set(Vector2 vector): void 
+		+sub(Vector2 vector): Vector2 
+		+dst(float x1, float y1, float x2, float y2): float 
+		+dot(Vector2 vector): float 
+	}
+	
+	class "Vector3" as mathVector3 {
+	}
+}
+package ecs.systems {
+	
+	class "AnimationSystem" as ecssystemsAnimationSystem {
+		+update(Set<Entity> entities, float deltaTime): void 
+	}
+	
+	class "MovementSystem" as ecssystemsMovementSystem {
+		+update(Set<Entity> entities, float deltaTime): void 
+	}
+	
+	class "AttackSystem" as ecssystemsAttackSystem {
+		+update(Set<Entity> entities, float deltaTime): void 
+	}
+	
+	class "EnemySystem" as ecssystemsEnemySystem {
+		+update(Set<Entity> entities, float deltaTime): void 
+	}
+}
+game_servercardstower_cardsPowerCard --> ecscomponentsPlacedCardComponent
+game_servercardstower_cardsPowerCard --> ecscomponentsCostComponent
+game_servercardstower_cardsPowerCard --> ecsCard
+game_servercardstower_cardsPowerCard --> ecscomponentsSpriteComponent
+game_serverTile --> game_serverTileType
+game_serverTile --> ecsEntity
+game_serverGameServer --> ecssystemsEnemySystem
+game_serverGameServer --> game_serverTowerFactory
+game_serverGameServer --> ecscomponentsVillageComponent
+game_serverGameServer --> ecscomponentsCostComponent
+game_serverGameServer --> ecscomponentsHealthComponent
+game_serverGameServer --> game_serverPlayerInput
+game_serverGameServer --> game_serverTexturePack
+game_serverGameServer --> game_serverServerMessagingController
+game_serverGameServer --> game_serverMap
+game_serverGameServer --> ecscomponentsTowerComponent
+game_serverGameServer --> ecscomponentsPathfindingComponent
+game_serverGameServer --> ecssystemsAttackSystem
+game_serverGameServer --> ecscomponentsPositionComponent
+game_serverGameServer --> game_clientTexturePack
+game_serverGameServer --> ecsComponentManager
+game_serverGameServer --> ecsEntity
+game_serverGameServer --> mathVector2
+game_serverGameServer --> game_serverPairableCards
+game_serverGameServer --> game_serverMapFactory
+game_serverGameServer --> mathVector3
+game_serverGameServer --> ecssystemsAnimationSystem
+game_serverGameServer --> game_serverPairableCardsTowerType
+game_serverGameServer --> ecscomponentsMoneyComponent
+game_serverGameServer --> clockClock
+game_serverGameServer --> game_serverGameState
+game_serverGameServer --> ecsECSManager
+game_serverGameServer --> game_serverCardFactoryCardType
+game_serverGameServer --> ecscomponentsPlacedCardComponent
+game_serverGameServer --> game_serverTile
+game_serverGameServer --> game_serverCardFactory
+game_serverGameServer --> ecscomponentsSpriteComponent
+game_serverGameServer --> ecscomponentsPlayerComponent
+game_serverGameServer --> ecssystemsMovementSystem
+game_serverGameServer --> ecscomponentsTileComponent
+game_serverGameServer --> ecscomponentsTextComponent
+game_servercardselemental_cardsIceCard --> ecscomponentsPlacedCardComponent
+game_servercardselemental_cardsIceCard --> ecscomponentsSpriteComponent
+game_servercardselemental_cardsIceCard --> ecscomponentsCostComponent
+game_servercardselemental_cardsIceCard --> ecsCard
+game_servercardselemental_cardsLightningCard --> ecscomponentsSpriteComponent
+game_servercardselemental_cardsLightningCard --> ecscomponentsPlacedCardComponent
+game_servercardselemental_cardsLightningCard --> ecsCard
+game_servercardselemental_cardsLightningCard --> ecscomponentsCostComponent
+game_serverMapFactory --> game_serverMap
+game_serverMapFactory --> game_serverTexturePack
+game_serverMapFactory --> game_clientTexturePack
+game_servercardstower_cardsMeleeCard --> ecscomponentsSpriteComponent
+game_servercardstower_cardsMeleeCard --> ecscomponentsCostComponent
+game_servercardstower_cardsMeleeCard --> ecsCard
+game_servercardstower_cardsMeleeCard --> ecscomponentsPlacedCardComponent
+game_serverEnemyFactory --> ecscomponentsMoneyComponent
+game_serverEnemyFactory --> ecscomponentsHealthComponent
+game_serverEnemyFactory --> ecscomponentsAnimationComponent
+game_serverEnemyFactory --> ecscomponentsSoundComponent
+game_serverEnemyFactory --> mathVector2
+game_serverEnemyFactory --> game_serverAudioPack
+game_serverEnemyFactory --> ecscomponentsSpriteComponent
+game_serverEnemyFactory --> ecscomponentsVelocityComponent
+game_serverEnemyFactory --> ecsEntity
+game_serverEnemyFactory --> game_clientTexturePack
+game_serverEnemyFactory --> game_serverTexturePack
+game_serverEnemyFactory --> ecscomponentsPathfindingComponent
+game_serverEnemyFactory --> ecscomponentsEnemyComponent
+game_serverEnemyFactory --> game_serverTile
+game_serverEnemyFactory --> ecscomponentsPositionComponent
+game_servercardstower_cardsMagicCard --> ecsCard
+game_servercardstower_cardsMagicCard --> ecscomponentsCostComponent
+game_servercardstower_cardsMagicCard --> ecscomponentsSpriteComponent
+game_servercardstower_cardsMagicCard --> ecscomponentsPlacedCardComponent
+game_servercardstower_cardsBowCard --> ecscomponentsPlacedCardComponent
+game_servercardstower_cardsBowCard --> ecscomponentsCostComponent
+game_servercardstower_cardsBowCard --> ecsCard
+game_servercardstower_cardsBowCard --> ecscomponentsSpriteComponent
+game_serverTileType --> game_serverTile
+game_servercardselemental_cardsFlameCard --> ecscomponentsPlacedCardComponent
+game_servercardselemental_cardsFlameCard --> ecscomponentsCostComponent
+game_servercardselemental_cardsFlameCard --> ecsCard
+game_servercardselemental_cardsFlameCard --> ecscomponentsSpriteComponent
+game_serverMap --> game_serverTexturePack
+game_serverMap --> game_serverTile
+game_serverMap --> game_serverTileType
+game_serverMap --> game_clientTexturePack
+game_serverTowerFactory --> ecscomponentsTargetComponent
+game_serverTowerFactory --> game_serverPairableCards
+game_serverTowerFactory --> ecscomponentsPositionComponent
+game_serverTowerFactory --> game_clientTexturePack
+game_serverTowerFactory --> game_serverTexturePack
+game_serverTowerFactory --> mathVector2
+game_serverTowerFactory --> game_serverCardFactory
+game_serverTowerFactory --> ecscomponentsAreaOfEffectComponent
+game_serverTowerFactory --> ecscomponentsSoundComponent
+game_serverTowerFactory --> ecsEntity
+game_serverTowerFactory --> game_serverAudioPack
+game_serverTowerFactory --> ecscomponentsAnimationComponent
+game_serverTowerFactory --> ecscomponentsTowerComponent
+game_serverTowerFactory --> game_serverPairableCardsTowerType
+game_serverTowerFactory --> game_serverCardFactoryCardType
+game_serverTowerFactory --> ecscomponentsSpriteComponent
+game_serverPairableCards --> game_serverCardFactory
+game_serverPairableCards --> game_serverMap
+game_serverPairableCards --> game_serverCardFactoryCardType
+game_serverPlayerInput --> game_serverCardFactoryCardType
+game_serverPlayerInput --> game_serverCardFactory
+game_serverCardFactory --> ecscomponentsPlacedCardComponent
+game_serverCardFactory --> ecscomponentsCostComponent
+game_serverCardFactory --> ecscomponentsPositionComponent
+game_serverCardFactory --> ecsEntity
+game_serverCardFactory --> ecscomponentsSpriteComponent
+game_serverCardFactory --> game_clientTexturePack
+game_serverCardFactory --> mathVector2
+game_serverCardFactory --> game_serverAudioPack
+game_serverCardFactory --> game_serverTexturePack
+game_serverCardFactory --> ecscomponentsSoundComponent
+game_serverTexturePack --> game_serverMap
+game_serverTexturePack --> game_serverTile
+game_serverGameState --> ecscomponentsPathfindingComponent
+game_serverGameState --> ecscomponentsPositionComponent
+game_serverGameState --> ecsEntity
+game_serverGameState --> ecscomponentsSpriteComponent
+game_serverGameState --> game_servercardstower_cardsBowCard
+game_serverGameState --> ecscomponentsVillageComponent
+game_serverGameState --> ecscomponentsTextComponent
+game_serverGameState --> ecscomponentsAnimationComponent
+game_serverGameState --> game_servercardselemental_cardsIceCard
+game_serverGameState --> ecscomponentsPlacedCardComponent
+game_serverGameState --> game_servercardselemental_cardsTechnologyCard
+game_serverGameState --> ecscomponentsEnemyComponent
+game_serverGameState --> ecsComponentManager
+game_serverGameState --> game_serverMap
+game_serverGameState --> game_serverTile
+game_serverGameState --> ecscomponentsCostComponent
+game_serverGameState --> game_servercardstower_cardsMeleeCard
+game_serverGameState --> ecscomponentsTileComponent
+game_serverGameState --> ecscomponentsHealthComponent
+game_serverGameState --> ecscomponentsTowerComponent
+game_serverGameState --> ecscomponentsSoundComponent
+game_serverGameState --> ecscomponentsMoneyComponent
+game_serverGameState --> ecscomponentsVelocityComponent
+game_serverGameState --> game_servercardstower_cardsMagicCard
+game_serverGameState --> ecscomponentsPlayerComponent
+game_serverGameState --> game_servercardselemental_cardsLightningCard
+game_serverGameState --> ecsECSManager
+game_serverGameState --> ecsCard
+game_serverGameState --> game_servercardstower_cardsPowerCard
+game_serverServerMessagingController --> game_serverPlayerInput
+game_serverServerMessagingController --> game_serverGameState
+game_servercardselemental_cardsTechnologyCard --> ecsCard
+game_servercardselemental_cardsTechnologyCard --> ecscomponentsPlacedCardComponent
+game_servercardselemental_cardsTechnologyCard --> ecscomponentsSpriteComponent
+game_servercardselemental_cardsTechnologyCard --> ecscomponentsCostComponent
+@enduml

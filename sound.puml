@@ -1,0 +1,23 @@
+@startuml
+package sound {
+	
+	class "LibGDXSound" as soundLibGDXSound {
+		+setVolume(int volume): void 
+		+playSound(SoundComponent soundComponent): void 
+		+playBackgroundMusic(SoundComponent soundComponent): void 
+	}
+}
+package ecs.components {
+	
+	class "SoundComponent" as ecscomponentsSoundComponent {
+	}
+}
+package ecs {
+	
+	interface "SoundController" as ecsSoundController {
+		+playSound(SoundComponent soundComponent): void
+	}
+}
+soundLibGDXSound --> ecscomponentsSoundComponent
+soundLibGDXSound --> ecsSoundController
+@enduml

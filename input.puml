@@ -1,0 +1,22 @@
+@startuml
+package input {
+	
+	class "LibGDXInput" as inputLibGDXInput {
+		+touchUp(int screenX, int screenY, int pointer, int button): boolean 
+		+onTouch(Consumer<TouchLocation> onTouch): void 
+		+onRelease(Consumer<TouchLocation> onRelease): void 
+		+touchDown(int screenX, int screenY, int pointer, int button): boolean 
+	}
+}
+package ecs {
+	
+	class "TouchLocation" as ecsTouchLocation {
+	}
+	
+	interface "InputController" as ecsInputController {
+		+onTouch(Consumer<TouchLocation> onTouch): void
+	}
+}
+inputLibGDXInput --> ecsInputController
+inputLibGDXInput --> ecsTouchLocation
+@enduml

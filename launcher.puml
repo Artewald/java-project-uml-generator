@@ -1,0 +1,91 @@
+@startuml
+package launcher {
+	
+	class "GameLauncher" as launcherGameLauncher {
+		+createGameClient(OrthographicCamera camera, Viewport viewport): GameClient 
+	}
+}
+package graphics {
+	
+	class "LibGDXGraphics" as graphicsLibGDXGraphics {
+		+drawText(TextComponent textComponent, PositionComponent positionComponent): void 
+		+drawSquare(PositionComponent positionComponent, float width, float height, float r, float g, float b, float a): void 
+		+draw(SpriteComponent component, PositionComponent positionComponent): void 
+	}
+}
+package ecs {
+	
+	interface "GraphicsController" as ecsGraphicsController {
+		+draw(SpriteComponent spriteComponent, PositionComponent positionComponent): void
+	}
+	
+	interface "SoundController" as ecsSoundController {
+		+playSound(SoundComponent soundComponent): void
+	}
+}
+package game_server {
+	
+	class "GameServer" as game_serverGameServer {
+		+run(String mapName, boolean isMultiplayer): void 
+		+initializeVillage(GameState gameState): void 
+		+setPlayerId(UUID playerId): void 
+	}
+}
+package networking.messaging {
+	
+	class "ClientMessenger" as networkingmessagingClientMessenger {
+		+requestGameState(UUID gameID): Optional<GameState> 
+		+joinGame(UUID gameID, UUID playerID): boolean 
+		+addAction(PlayerInput action): void 
+	}
+	
+	class "ServerMessenger" as networkingmessagingServerMessenger {
+		+createGame(String mapName): UUID 
+		+setNewGameState(UUID gameId, GameState gameState): void 
+		+getGameState(UUID gameId): GameState 
+		+lookForPendingActions(UUID playerId): List<PlayerInput> 
+		+lookForPendingPlayer(UUID gameId): Optional<UUID> 
+		+removeGame(UUID gameId): void 
+	}
+}
+package sound {
+	
+	class "LibGDXSound" as soundLibGDXSound {
+		+setVolume(int volume): void 
+		+playSound(SoundComponent soundComponent): void 
+		+playBackgroundMusic(SoundComponent soundComponent): void 
+	}
+}
+package game_client {
+	
+	class "Controllers" as game_clientControllers {
+	}
+	
+	interface "ClientMessagingController" as game_clientClientMessagingController {
+		+joinGame(UUID gameID, UUID playerID): boolean
+	}
+	
+	class "GameClient" as game_clientGameClient {
+	}
+}
+package input {
+	
+	class "LibGDXInput" as inputLibGDXInput {
+		+touchUp(int screenX, int screenY, int pointer, int button): boolean 
+		+onTouch(Consumer<TouchLocation> onTouch): void 
+		+onRelease(Consumer<TouchLocation> onRelease): void 
+		+touchDown(int screenX, int screenY, int pointer, int button): boolean 
+	}
+}
+launcherGameLauncher --> soundLibGDXSound
+launcherGameLauncher --> game_serverGameServer
+launcherGameLauncher --> networkingmessagingClientMessenger
+launcherGameLauncher --> ecsSoundController
+launcherGameLauncher --> networkingmessagingServerMessenger
+launcherGameLauncher --> game_clientClientMessagingController
+launcherGameLauncher --> graphicsLibGDXGraphics
+launcherGameLauncher --> game_clientGameClient
+launcherGameLauncher --> game_clientControllers
+launcherGameLauncher --> inputLibGDXInput
+launcherGameLauncher --> ecsGraphicsController
+@enduml

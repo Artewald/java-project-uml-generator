@@ -1,0 +1,31 @@
+@startuml
+package math {
+	
+	class "Vector2" as mathVector2 {
+		+add(Vector2 vector): Vector2 
+		+scl(float scalar): Vector2 
+		+set(Vector2 vector): void 
+		+sub(Vector2 vector): Vector2 
+		+dst(float x1, float y1, float x2, float y2): float 
+		+dot(Vector2 vector): float 
+	}
+	
+	class "Rectangle" as mathRectangle {
+		+setSize(float width, float height): Rectangle 
+		+overlaps(Rectangle rectangle): boolean 
+		+setY(float y): Rectangle 
+		+setPosition(Vector2 vector): Rectangle 
+		+setX(float x): Rectangle 
+		+contains(Rectangle rectangle): boolean 
+		+equals(Object object): boolean 
+		+set(Rectangle rectangle): void 
+		+setCenter(Vector2 vector): Rectangle 
+		+getCenter(Vector2 vector): Vector2 
+		+merge(Rectangle rectangle, Vector2 vector, Vector2 vector2, Rectangle rectangle2, Vector2 vector3, Vector2 vector4, Vector2 vector5, Vector2 vector6): Rectangle 
+	}
+	
+	class "Vector3" as mathVector3 {
+	}
+}
+mathRectangle --> mathVector2
+@enduml
